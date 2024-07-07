@@ -11,17 +11,14 @@ export async function POST(req: NextRequest) {
 			"Content-Disposition": `attachment; filename='video.mp4'`,
 		};
 
-		const videoStream = ytdl(url, { quality: "137" });
+		const videoStream = ytdl(url, { quality: "highestvideo" });
 
 		// Stream the video directly to the client
 		return new NextResponse(videoStream as unknown as BodyInit, {
 			headers,
 		});
-	} catch (error) {
-		return NextResponse.json(
-			{ error: "Failed to download or process video" },
-			{ status: 500 }
-		);
+	} catch (error: any) {
+		return NextResponse.json({ error: error.message }, { status: 500 });
 	}
 }
 
