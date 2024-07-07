@@ -48,17 +48,5 @@ export async function POST(req: NextRequest) {
 			{ error: "Failed to download or process video" },
 			{ status: 500 }
 		);
-	} finally {
-		const filePathToDelete = path.join("./processed/", "video-youtube.mp4"); // Replace with your file path
-
-		fs.unlink(filePathToDelete, (err) => {
-			if (err) {
-				console.error(
-					`Error deleting file ${filePathToDelete}: ${err}`
-				);
-				return;
-			}
-			console.log(`File ${filePathToDelete} deleted successfully`);
-		});
 	}
 }
