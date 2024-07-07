@@ -8,30 +8,44 @@ export default function Home() {
 	const getVidoe = async (e: any) => {
 		e.preventDefault();
 		setLoading(true);
+
 		if (!url) {
 			alert("Please enter a URL first!");
 			return;
 		}
 
-		const response = await fetch("/api", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({ url }),
-		});
-		if (response.ok) {
+		try {
+			const response = await fetch("/api", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ url }),
+			});
+
+			const videoId = await fetch(`/api?link=${url}`, {
+				cache: "no-store",
+			});
+
+			if (!response.ok) {
+				throw new Error("Failed to download and process the video");
+			}
+
 			const blob = await response.blob();
 			const downloadUrl = window.URL.createObjectURL(blob);
 			const a = document.createElement("a");
 			a.style.display = "none";
 			a.href = downloadUrl;
-			a.download = `YouTube-Video`;
+
+			const { vidId } = await videoId.json();
+
+			a.download = `Video-${vidId}`;
 			document.body.appendChild(a);
 			a.click();
 			window.URL.revokeObjectURL(downloadUrl);
 			setLoading(false);
-		} else {
+		} catch (error) {
+			console.error("Error downloading video:", error);
 			alert("Failed to download and process the video");
 			setLoading(false);
 		}
