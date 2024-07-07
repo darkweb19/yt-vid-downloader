@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import ytdl from "ytdl-core";
 
 export async function POST(req: NextRequest) {
-	const { url } = await req.json();
+	const { url, quality } = await req.json();
 
 	try {
 		// Set headers for streaming response
@@ -11,7 +11,10 @@ export async function POST(req: NextRequest) {
 			"Content-Disposition": `attachment; filename='video.mp4'`,
 		};
 
-		const videoStream = ytdl(url, { quality: "highestvideo" });
+		const videoStream = ytdl(url, {
+			filter: (format) =>
+				format.quality === quality && format.container === "mp4",
+		});
 
 		// Stream the video directly to the client
 		return new NextResponse(videoStream as unknown as BodyInit, {
